@@ -104,21 +104,21 @@ const Material: React.FC = () => {
 
       materialExists
         ? Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Material updated successfully',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          })
+          icon: 'success',
+          title: 'Success',
+          text: 'Material updated successfully',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        })
         : Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Material added successfully',
-            timer: 1500,
-            timerProgressBar: true,
-            showConfirmButton: false,
-          });
+          icon: 'success',
+          title: 'Success',
+          text: 'Material added successfully',
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
+        });
 
       fetchData();
       setIsEditing(false);
@@ -204,22 +204,33 @@ const Material: React.FC = () => {
                       events: {
                         'image.beforeUpload': function (images: File[]) {
                           const editor: any = this;
-                          const reader = new FileReader();
-                          reader.onload = (e: ProgressEvent<FileReader>) => {
-                            if (e.target?.result) {
+                          const file = images[0];
+                          if (!file) return false;
+
+                          const formData = new FormData();
+                          formData.append('image', file);
+
+                          api.post('/material/upload-image', formData, {
+                            headers: { 'Content-Type': 'multipart/form-data' }
+                          }).then(response => {
+                            if (response.data && response.data.link) {
                               editor.image.insert(
-                                e.target.result as string,
+                                response.data.link,
                                 null,
                                 null,
-                                null,
-                                null,
-                                null,
-                                editor.image.get(),
+                                editor.image.get()
                               );
                             }
-                          };
-                          reader.readAsDataURL(images[0]);
-                          return false;
+                          }).catch(err => {
+                            console.error("Failed to upload image:", err);
+                            Swal.fire({
+                              icon: 'error',
+                              title: 'Upload Failed',
+                              text: 'Gagal mengupload gambar ke Supabase'
+                            });
+                          });
+
+                          return false; // Prevent default Froala behavior
                         },
                       },
                     }}
