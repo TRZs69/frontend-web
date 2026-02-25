@@ -6,6 +6,7 @@ import { useParams, Link } from 'react-router-dom';
 import DataTable from 'datatables.net-react';
 import { UsercourseDto } from '../dto/UsercourseDto';
 import { CourseDto } from '../dto/CourseDto';
+import Swal from 'sweetalert2';
 
 const UserCourse: React.FC = () => {
   const { id } = useParams();
@@ -18,16 +19,16 @@ const UserCourse: React.FC = () => {
   const fetchCourse = async () => {
     const courseResponse = await api.get<CourseDto>(`/course/${id}`);
 
-    if(courseResponse.data?.id) {
+    if (courseResponse.data?.id) {
       setDataCourse(courseResponse.data);
     }
   }
 
-  const fetchStudent = async() => {
+  const fetchStudent = async () => {
     try {
       const userResponse = await api.get<UserDto[]>('/user?role=STUDENT');
       setData(userResponse.data);
-    } catch(err) {
+    } catch (err) {
       console.log(err)
     }
   }
@@ -68,7 +69,41 @@ const UserCourse: React.FC = () => {
     } catch (error) {
       console.error('Error while adding user course :', error)
     }
-  } 
+  }
+
+  const handleDeleteUserCourse = async (userId: number) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      const response = await api.get(`/usercourse/${userId}/${id}`);
+      const userCourses = response.data;
+
+      if (userCourses && userCourses.length > 0) {
+        const userCourseId = userCourses[0].id;
+        await api.delete(`/usercourse/${userCourseId}`);
+        fetchData();
+        Swal.fire('Deleted!', 'User has been removed from the course.', 'success');
+      } else {
+        console.error('User course mapping not found');
+        Swal.fire('Error', 'User course mapping not found', 'error');
+      }
+    } catch (error) {
+      console.error('Error while deleting user course:', error);
+      Swal.fire('Error!', 'Failed to delete user course.', 'error');
+    }
+  };
 
   const columns = [
     { data: 'name', title: 'Name' },
@@ -120,7 +155,7 @@ const UserCourse: React.FC = () => {
           'bg-danger',
           `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0L284.2 0c12.1 0 23.2 6.8 28.6 17.7L320 32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 96C14.3 96 0 81.7 0 64S14.3 32 32 32l96 0 7.2-14.3zM32 128l384 0 0 320c0 35.3-28.7 64-64 64L96 512c-35.3 0-64-28.7-64-64l0-320zm96 64c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16l0 224c0 8.8 7.2 16 16 16s16-7.2 16-16l0-224c0-8.8-7.2-16-16-16z"/></svg>`, // Example SVG for view
           'Delete',
-          () => {},
+          () => { handleDeleteUserCourse(rowData.id); },
         );
 
         buttonContainer.appendChild(deleteButton);
