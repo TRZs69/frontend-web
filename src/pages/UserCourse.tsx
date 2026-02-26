@@ -66,8 +66,10 @@ const UserCourse: React.FC = () => {
 
       handleClearForm();
       fetchData();
+      Swal.fire('Success!', 'Student has been added to the course.', 'success');
     } catch (error) {
-      console.error('Error while adding user course :', error)
+      console.error('Error while adding user course :', error);
+      Swal.fire('Error!', 'Failed to add student to the course.', 'error');
     }
   }
 
