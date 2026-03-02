@@ -158,7 +158,7 @@ const Course: React.FC = () => {
         return;
       }
 
-      const imageUrl = `https://msvsocwvhpxfnfhjewar.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
+      const imageUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
 
       const imagePayload: UpdateCourseDto = {
         image: imageUrl,
@@ -248,7 +248,7 @@ const Course: React.FC = () => {
           return;
         }
 
-        imageUrl = `https://msvsocwvhpxfnfhjewar.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
+        imageUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
       } catch (uploadErr) {
         handleClearForm();
         Swal.fire({
