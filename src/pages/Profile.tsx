@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/api';
 import { UserDto } from '../dto/UserDto';
+import { supabase } from '../api/supabase';
 
 const Profile = () => {
   const localUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -23,6 +24,45 @@ const Profile = () => {
     };
     fetchUser();
   }, [localUser.id]);
+
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      setUploading(true);
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${localUser.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      let { error: uploadError } = await supabase.storage
+        .from('avatars') // Uses an 'avatars' public bucket.
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Save new image URL to our main database via the API
+      await api.put(`/user/${localUser.id}`, { profilePicture: publicUrl });
+
+      // Immediately display locally
+      const updatedLocalUser = { ...localUser, profilePicture: publicUrl };
+      localStorage.setItem('user', JSON.stringify(updatedLocalUser));
+      setUser((prev) => prev ? { ...prev, profilePicture: publicUrl } : prev);
+
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Error uploading image!');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const displayUser = user || localUser;
   return (
@@ -107,6 +147,9 @@ const Profile = () => {
                   name="profile"
                   id="profile"
                   className="sr-only"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
                 />
               </label>
             </div>
