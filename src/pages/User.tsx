@@ -28,6 +28,7 @@ export default function User() {
   const [badge, setBadge] = useState<BadgeDto[]>();
   const [trade, setTrade] = useState<TradeDto[]>();
   const [isLoadingInfo, setIsLoadingInfo] = useState<boolean>(false);
+  const [userInfoCache, setUserInfoCache] = useState<Record<number, { badge: BadgeDto[], trade: TradeDto[] }>>({});
 
   const style = `
     .swal2-container {
@@ -212,12 +213,22 @@ export default function User() {
 
   const handleInfoUser = async (user: UserDto) => {
     setPoint(user.points || 0);
-    setIsLoadingInfo(true);
     setIsInfoModalOpen(true);
+
+    if (userInfoCache[user.id]) {
+      setBadge(userInfoCache[user.id].badge);
+      setTrade(userInfoCache[user.id].trade);
+      return;
+    }
+
+    setIsLoadingInfo(true);
+
+    let dataBadge: BadgeDto[] = [];
+    let dataTrade: TradeDto[] = [];
 
     try {
       const response = await api.get(`/user/${user.id}/badges`);
-      const dataBadge = response.data.map((item: any) => item.badge);
+      dataBadge = response.data.map((item: any) => item.badge);
       setBadge(dataBadge);
     } catch (error) {
       console.error('Error while getting info user badges', error);
@@ -226,12 +237,17 @@ export default function User() {
 
     try {
       const response = await api.get(`/user/${user.id}/trades`);
-      const dataTrade = response.data.map((item: any) => item.trade);
+      dataTrade = response.data.map((item: any) => item.trade);
       setTrade(dataTrade);
     } catch (error) {
       console.error('Error while getting info user trades', error);
       setTrade([]);
     }
+
+    setUserInfoCache((prev) => ({
+      ...prev,
+      [user.id]: { badge: dataBadge, trade: dataTrade },
+    }));
 
     setIsLoadingInfo(false);
   };
