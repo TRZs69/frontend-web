@@ -10,7 +10,7 @@ export interface UserDto {
   badges?: any[] | null;
   instructorId?: string | null;
   instructorCourses?: number | null;
-  profilePicture?: string | null;
+  image?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,7 +22,7 @@ export interface AddUserDto {
   role: "ADMIN" | "STUDENT" | "INSTRUCTOR";
   student_id?: string | null;
   instructor_id?: string | null;
-  profilePicture?: string | null;
+  image?: string | null;
 }
 
 export interface EditUserDto {
@@ -31,5 +31,5 @@ export interface EditUserDto {
   role?: "ADMIN" | "STUDENT" | "INSTRUCTOR";
   studentId?: string | null;
   instructorId?: string | null;
-  profilePicture?: string | null;
+  image?: string | null;
 }

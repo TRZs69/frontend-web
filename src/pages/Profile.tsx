@@ -52,12 +52,12 @@ const Profile = () => {
       const finalUrl = `${publicUrl}?t=${Date.now()}`;
 
       // Save new image URL to our main database via the API
-      await api.put(`/user/${localUser.id}`, { profilePicture: finalUrl });
+      await api.put(`/user/${localUser.id}`, { image: finalUrl });
 
       // Immediately display locally
-      const updatedLocalUser = { ...localUser, profilePicture: finalUrl };
+      const updatedLocalUser = { ...localUser, image: finalUrl };
       localStorage.setItem('user', JSON.stringify(updatedLocalUser));
-      setUser((prev) => prev ? { ...prev, profilePicture: finalUrl } : prev);
+      setUser((prev) => prev ? { ...prev, image: finalUrl } : prev);
 
     } catch (error) {
       console.error('Error uploading image:', error);
@@ -116,7 +116,7 @@ const Profile = () => {
           <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
             <div className="relative drop-shadow-2">
               <img
-                src={displayUser.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayUser.name || 'User')}&background=random`}
+                src={displayUser.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayUser.name || 'User')}&background=random`}
                 alt="profile"
                 className="h-full w-full rounded-full object-cover"
               />

@@ -30,7 +30,7 @@ const DropdownUser = () => {
 
         <span className="h-12 w-12 rounded-full overflow-hidden">
           <img
-            src={user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random`}
+            src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random`}
             alt="User"
             className="h-full w-full object-cover"
           />
