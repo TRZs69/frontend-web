@@ -3,8 +3,29 @@ import CoverOne from '../images/cover/cover-01.png';
 import userSix from '../images/user/user-06.png';
 import { Link } from 'react-router-dom';
 
+import { useEffect, useState } from 'react';
+import api from '../api/api';
+import { UserDto } from '../dto/UserDto';
+
 const Profile = () => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const localUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const [user, setUser] = useState<UserDto | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (localUser.id) {
+          const response = await api.get(`/user/${localUser.id}`);
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+    fetchUser();
+  }, [localUser.id]);
+
+  const displayUser = user || localUser;
   return (
     <>
       <Breadcrumb pageName="Profile" />
@@ -89,27 +110,27 @@ const Profile = () => {
           </div>
           <div className="mt-4">
             <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">
-              {user.name || 'User Name'}
+              {displayUser.name || 'User Name'}
             </h3>
-            <p className="font-medium">{user.role || 'Role'}</p>
-            <div className="mx-auto mt-4.5 mb-5.5 grid max-w-94 grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
+            <p className="font-medium">{displayUser.role || 'Role'}</p>
+            <div className="mx-auto mt-4.5 mb-5.5 grid max-w-94 grid-cols-2 lg:grid-cols-3 rounded-md border border-stroke py-2.5 shadow-1 dark:border-strokedark dark:bg-[#37404F]">
               <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">
-                  259
+                  {displayUser.points || 0}
                 </span>
-                <span className="text-sm">Posts</span>
+                <span className="text-sm">Points</span>
               </div>
-              <div className="flex flex-col items-center justify-center gap-1 border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
+              <div className="flex flex-col items-center justify-center gap-1 border-r lg:border-r border-stroke px-4 dark:border-strokedark xsm:flex-row">
                 <span className="font-semibold text-black dark:text-white">
-                  129K
+                  {displayUser.role === 'INSTRUCTOR' ? displayUser.instructorCourses || 0 : displayUser.totalCourses || 0}
                 </span>
-                <span className="text-sm">Followers</span>
+                <span className="text-sm">Courses</span>
               </div>
-              <div className="flex flex-col items-center justify-center gap-1 px-4 xsm:flex-row">
-                <span className="font-semibold text-black dark:text-white">
-                  2K
+              <div className="flex flex-col items-center justify-center gap-1 px-4 lg:col-span-1 col-span-2 pt-2 lg:pt-0 xsm:flex-row border-t lg:border-t-0 border-stroke dark:border-strokedark">
+                <span className="font-semibold text-black dark:text-white text-xs lg:text-base">
+                  {displayUser.studentId || displayUser.instructorId || displayUser.id}
                 </span>
-                <span className="text-sm">Following</span>
+                <span className="text-sm whitespace-nowrap">ID No.</span>
               </div>
             </div>
 
@@ -118,11 +139,7 @@ const Profile = () => {
                 About Me
               </h4>
               <p className="mt-4.5">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Pellentesque posuere fermentum urna, eu condimentum mauris
-                tempus ut. Donec fermentum blandit aliquet. Etiam dictum dapibus
-                ultricies. Sed vel aliquet libero. Nunc a augue fermentum,
-                pharetra ligula sed, aliquam lacus.
+                Hi, my name is {displayUser.name}. I am a registered {displayUser.role} on Levelearn. Here you can track my points, course enrollment progress, and interactions.
               </p>
             </div>
 
