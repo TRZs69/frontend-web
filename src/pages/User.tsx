@@ -215,13 +215,14 @@ export default function User() {
     setPoint(user.points || 0);
     setIsInfoModalOpen(true);
 
+    // Stale-while-revalidate: Populate from cache instantly if available, but DO NOT block the background refetch.
     if (userInfoCache[user.id]) {
       setBadge(userInfoCache[user.id].badge);
       setTrade(userInfoCache[user.id].trade);
-      return;
+    } else {
+      // Only show the loading indicator if we don't have cached data to show immediately.
+      setIsLoadingInfo(true);
     }
-
-    setIsLoadingInfo(true);
 
     let dataBadge: BadgeDto[] = [];
     let dataTrade: TradeDto[] = [];
