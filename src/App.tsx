@@ -16,6 +16,7 @@ import EditQuestion from './pages/EditQuestion';
 import Badge from './pages/Badge';
 import Login from './pages/Login';
 import Trade from './pages/Trade';
+import Profile from './pages/Profile';
 import AssessmentResponse from './pages/AssessmentResponse';
 import DetailResponse from './pages/DetailResponse';
 import AssignmentResponse from './pages/AssignmentResponse';
@@ -164,6 +165,15 @@ function App() {
                     <>
                       <PageTitle title="Trades" />
                       <Trade />
+                    </>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <>
+                      <PageTitle title="Profile" />
+                      <Profile />
                     </>
                   }
                 />
