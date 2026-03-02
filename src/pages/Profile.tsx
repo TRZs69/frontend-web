@@ -126,8 +126,8 @@ const Profile = () => {
           </div>
         </div>
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
-          <div className="relative z-30 mx-auto -mt-22 h-30 w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:w-44 sm:p-3">
-            <div className="relative drop-shadow-2 w-full h-full">
+          <div className="relative z-30 mx-auto -mt-22 aspect-square h-[120px] w-[120px] sm:h-[176px] sm:w-[176px] rounded-full bg-white/20 p-1 backdrop-blur sm:p-3">
+            <div className="relative drop-shadow-2 w-full h-full rounded-full">
               <img
                 src={displayUser.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayUser.name || 'User')}&background=random`}
                 alt="profile"
