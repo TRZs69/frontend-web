@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/api';
 import { UserDto } from '../dto/UserDto';
 import { supabase } from '../api/supabase';
+import Swal from 'sweetalert2';
 
 const Profile = () => {
   const localUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -59,9 +60,21 @@ const Profile = () => {
       localStorage.setItem('user', JSON.stringify(updatedLocalUser));
       setUser((prev) => prev ? { ...prev, image: finalUrl } : prev);
 
-    } catch (error) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Profile picture updated successfully.',
+        confirmButtonColor: '#3C50E0',
+      });
+
+    } catch (error: any) {
       console.error('Error uploading image:', error);
-      alert('Error uploading image!');
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: error.response?.data?.message || 'Failed to update profile picture. Please try again.',
+        confirmButtonColor: '#3C50E0',
+      });
     } finally {
       setUploading(false);
     }
@@ -113,8 +126,8 @@ const Profile = () => {
           </div>
         </div>
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
-          <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-            <div className="relative drop-shadow-2">
+          <div className="relative z-30 mx-auto -mt-22 h-30 w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:w-44 sm:p-3">
+            <div className="relative drop-shadow-2 w-full h-full">
               <img
                 src={displayUser.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayUser.name || 'User')}&background=random`}
                 alt="profile"
