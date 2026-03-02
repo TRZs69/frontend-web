@@ -35,26 +35,29 @@ const Profile = () => {
       setUploading(true);
 
       const fileExt = file.name.split('.').pop();
-      const fileName = `${localUser.id}-${Math.random()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `profile_picture_${localUser.id}.${fileExt}`;
+      const filePath = `${fileName}`;
 
       let { error: uploadError } = await supabase.storage
-        .from('avatars') // Uses an 'avatars' public bucket.
-        .upload(filePath, file);
+        .from('profile_pictures') // Uses the 'profile_pictures' public bucket.
+        .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('avatars')
+        .from('profile_pictures')
         .getPublicUrl(filePath);
 
+      // Append cache buster so browser instantly updates picture
+      const finalUrl = `${publicUrl}?t=${Date.now()}`;
+
       // Save new image URL to our main database via the API
-      await api.put(`/user/${localUser.id}`, { profilePicture: publicUrl });
+      await api.put(`/user/${localUser.id}`, { profilePicture: finalUrl });
 
       // Immediately display locally
-      const updatedLocalUser = { ...localUser, profilePicture: publicUrl };
+      const updatedLocalUser = { ...localUser, profilePicture: finalUrl };
       localStorage.setItem('user', JSON.stringify(updatedLocalUser));
-      setUser((prev) => prev ? { ...prev, profilePicture: publicUrl } : prev);
+      setUser((prev) => prev ? { ...prev, profilePicture: finalUrl } : prev);
 
     } catch (error) {
       console.error('Error uploading image:', error);
