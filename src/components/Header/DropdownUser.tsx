@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
-import UserOne from '../../images/user/user-01.png';
 
 const DropdownUser = () => {
   const user = JSON.parse(localStorage.getItem('user') || '');
@@ -29,8 +28,12 @@ const DropdownUser = () => {
           <span className="block text-xs">{user.role}</span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+        <span className="h-12 w-12 rounded-full overflow-hidden">
+          <img
+            src={user.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'User')}&background=random`}
+            alt="User"
+            className="h-full w-full object-cover"
+          />
         </span>
 
         <svg
