@@ -21,7 +21,7 @@ const AssessmentResponse: React.FC = () => {
     }
   };
 
-  const fetchAssess = async() => {
+  const fetchAssess = async () => {
     try {
       const response = await api.get<AssessmentDto>(`/assessment/${assessId}`);
       fetchAssessResponse(response.data.chapterId)
@@ -54,7 +54,7 @@ const AssessmentResponse: React.FC = () => {
       data: 'assessmentDone',
       title: 'Status',
       createdCell: (cell: HTMLTableCellElement, cellData: string) => {
-        cell.textContent = !!cellData === true ? 'FINISHED' : 'UNFINISHED'; 
+        cell.textContent = !!cellData === true ? 'FINISHED' : 'UNFINISHED';
       },
     },
     {
@@ -150,7 +150,7 @@ const AssessmentResponse: React.FC = () => {
             columns={columns}
             className="display nowrap w-full"
             options={{
-              order: [[5, 'desc']],
+              order: [[3, 'desc']],
             }}
           />
         </div>
