@@ -23,9 +23,10 @@ const AssessmentResponse: React.FC = () => {
 
   const fetchAssess = async () => {
     try {
-      const response = await api.get<AssessmentDto>(`/assessment/${assessId}`);
+      // assessId in the URL is actually the chapterId (same convention as Assessment.tsx)
+      const response = await api.get<AssessmentDto>(`/chapter/${assessId}/assessments`);
       if (!response.data) {
-        console.error('Error while fetching assessment data: assessment not found (null response)');
+        console.error('Error while fetching assessment data: assessment not found for chapter', assessId);
         return;
       }
       fetchAssessResponse(response.data.chapterId);
