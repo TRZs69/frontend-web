@@ -24,7 +24,11 @@ const AssessmentResponse: React.FC = () => {
   const fetchAssess = async () => {
     try {
       const response = await api.get<AssessmentDto>(`/assessment/${assessId}`);
-      fetchAssessResponse(response.data.chapterId)
+      if (!response.data) {
+        console.error('Error while fetching assessment data: assessment not found (null response)');
+        return;
+      }
+      fetchAssessResponse(response.data.chapterId);
     } catch (error) {
       console.error('Error while fetching assessment data', error);
     }
