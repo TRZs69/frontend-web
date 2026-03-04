@@ -56,9 +56,10 @@ const Assessment: React.FC = () => {
         setAssessId(response.data.id);
         if (response.data.questions) {
           try {
-            const parsedQuestions: Question[] = JSON.parse(
-              response.data.questions,
-            );
+            const raw = response.data.questions;
+            const parsedQuestions: Question[] = Array.isArray(raw)
+              ? raw
+              : JSON.parse(raw as string);
             setQuestions(parsedQuestions);
             setAssessmentExist(true);
           } catch (parseError) {
@@ -476,7 +477,7 @@ const Assessment: React.FC = () => {
                   </div>
                 ) : (
                   <div className="mb-4">
-                     <div className="mb-2">Answer</div>
+                    <div className="mb-2">Answer</div>
                     <input
                       className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       type="text"
