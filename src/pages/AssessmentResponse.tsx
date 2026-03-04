@@ -25,11 +25,12 @@ const AssessmentResponse: React.FC = () => {
     try {
       // assessId in the URL is actually the chapterId (same convention as Assessment.tsx)
       const response = await api.get<AssessmentDto>(`/chapter/${assessId}/assessments`);
-      if (!response.data) {
+      if (!response.data || !response.data.id) {
         console.error('Error while fetching assessment data: assessment not found for chapter', assessId);
         return;
       }
-      fetchAssessResponse(response.data.chapterId);
+      // Use assessId directly since it's already the chapterId
+      fetchAssessResponse(Number(assessId));
     } catch (error) {
       console.error('Error while fetching assessment data', error);
     }
