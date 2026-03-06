@@ -2,7 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import api from '../api/api';
 import { AddMaterialDto, MaterialDto } from '../dto/MaterialDto';
-import FroalaEditor from 'react-froala-wysiwyg';
+import FroalaEditorComponent from 'react-froala-wysiwyg';
+import FroalaEditor from 'froala-editor';
 import 'froala-editor/css/froala_style.min.css';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import 'froala-editor/js/plugins/image.min.js';
@@ -15,6 +16,39 @@ import 'froala-editor/js/plugins/code_beautifier.min.js';
 import 'froala-editor/js/plugins/code_view.min.js';
 import { CourseDto } from '../dto/CourseDto';
 import Swal from 'sweetalert2';
+
+const SUPABASE_PUBLIC_MATERIALS_BASE =
+  `${import.meta.env.VITE_SUPABASE_URL || 'https://itarozdimxukkhwxruti.supabase.co'}` +
+  '/storage/v1/object/public/materials/';
+
+const convertAssetUrlToSupabase = (src: string): string => {
+  if (!src) {
+    return src;
+  }
+
+  const decoded = decodeURIComponent(src);
+  const isFlutterAsset = decoded.startsWith('asset:lib/assets/');
+  if (!isFlutterAsset) {
+    return src;
+  }
+
+  const fileName = decoded.split('/').pop();
+  if (!fileName) {
+    return src;
+  }
+
+  return `${SUPABASE_PUBLIC_MATERIALS_BASE}${fileName}`;
+};
+
+const normalizeImageSources = (html: string): string => {
+  if (!html) {
+    return html;
+  }
+
+  return html.replace(/(<img[^>]*\ssrc=["'])([^"']+)(["'][^>]*>)/gi, (_match, p1, src, p3) => {
+    return `${p1}${convertAssetUrlToSupabase(src)}${p3}`;
+  });
+};
 
 const Material: React.FC = () => {
   const { courseId, id } = useParams();
@@ -48,9 +82,10 @@ const Material: React.FC = () => {
     try {
       const response = await api.get<MaterialDto>(`/chapter/${id}/materials`);
       if (response.data?.id) {
+        const normalizedContent = normalizeImageSources(response.data.content || '');
         setMaterialData({
           material: response.data,
-          froalaContent: response.data.content,
+          froalaContent: normalizedContent,
         });
         setMaterialExists(true);
         setFroalaLoading(false); // Data loaded, Froala can render
@@ -67,6 +102,21 @@ const Material: React.FC = () => {
       // setIsLoading(false);
     }
   }, [id]);
+
+  useEffect(() => {
+    // Prevent Froala bootstrap telemetry ping that can be blocked by browser extensions.
+    const froalaAny = FroalaEditor as unknown as {
+      Bootstrap?: {
+        load?: () => void;
+        _init?: () => void;
+      };
+    };
+
+    if (froalaAny.Bootstrap) {
+      froalaAny.Bootstrap.load = () => { };
+      froalaAny.Bootstrap._init = () => { };
+    }
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -87,7 +137,10 @@ const Material: React.FC = () => {
   }, [froalaLoading]);
 
   const handleFroalaChange = useCallback((model: string) => {
-    setMaterialData((prev) => ({ ...prev, froalaContent: model }));
+    setMaterialData((prev) => ({
+      ...prev,
+      froalaContent: normalizeImageSources(model),
+    }));
   }, []);
 
   const saveMaterial = useCallback(async () => {
@@ -95,7 +148,7 @@ const Material: React.FC = () => {
       const materialToSave: AddMaterialDto = {
         chapterId: parseInt(id ?? '0', 10),
         name: materialData.material.name,
-        content: materialData.froalaContent,
+        content: normalizeImageSources(materialData.froalaContent),
       };
 
       materialExists
@@ -193,7 +246,7 @@ const Material: React.FC = () => {
                 <div>Loading Editor...</div>
               ) : (
                 froalaRender && (
-                  <FroalaEditor // Hanya render jika froalaRender true
+                  <FroalaEditorComponent // Hanya render jika froalaRender true
                     key={materialData.material.id}
                     model={materialData.froalaContent}
                     onModelChange={handleFroalaChange}
