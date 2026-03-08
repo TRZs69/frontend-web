@@ -24,6 +24,7 @@ const Badge: React.FC = () => {
   const [courseId, setCourseId] = useState<number>(0);
   const [chapterId, setChapterId] = useState<number>(0);
   const [badgeId, setBadgeId] = useState<number>(0);
+  const [tableKey, setTableKey] = useState<number>(0);
 
   const selectStyle = `
   .custom-select {
@@ -42,6 +43,11 @@ const Badge: React.FC = () => {
     } catch (err) {
       console.error('Error while getting badge: ', err);
     }
+  };
+
+  const refreshTableData = async () => {
+    await fetchData();
+    setTableKey((prev) => prev + 1);
   };
 
   const fetchCourse = async () => {
@@ -80,7 +86,7 @@ const Badge: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    refreshTableData();
     fetchCourse();
   }, []);
 
@@ -335,7 +341,7 @@ const Badge: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (err) {
       handleClearForm();
       Swal.fire({
@@ -398,7 +404,7 @@ const Badge: React.FC = () => {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          fetchData();
+          await refreshTableData();
         } catch (err) {
           handleClearForm();
           Swal.fire({
@@ -507,6 +513,7 @@ const Badge: React.FC = () => {
         </div>
         <div className="max-w-full overflow-x-auto ">
           <DataTable
+            key={tableKey}
             data={data}
             columns={columns}
             className="display nowrap w-full"
