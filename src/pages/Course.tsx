@@ -24,6 +24,7 @@ const Course: React.FC = () => {
   const [code, setCode] = useState<string>();
   const [desc, setDesc] = useState<string>();
   const [courseId, setCourseId] = useState<number>();
+  const [tableKey, setTableKey] = useState<number>(0);
 
 
   const fetchUser = async () => {
@@ -40,10 +41,11 @@ const Course: React.FC = () => {
     try {
       const response = await api.get<CourseDto[]>('course');
       let courseData = response.data;
+      const activeUserData = currentUserData || userData;
 
-      if (user.role === 'INSTRUCTOR' && currentUserData?.instructorCourses) {
+      if (user.role === 'INSTRUCTOR' && activeUserData?.instructorCourses) {
         courseData = courseData.filter(
-          (course) => course.id === currentUserData.instructorCourses,
+          (course) => course.id === activeUserData.instructorCourses,
         );
       }
 
@@ -52,6 +54,11 @@ const Course: React.FC = () => {
     } catch (error) {
       console.error('Error Fetching Data: ', error);
     }
+  };
+
+  const refreshTableData = async (currentUserData?: UserDto) => {
+    await fetchData(currentUserData);
+    setTableKey((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -178,7 +185,7 @@ const Course: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (err) {
       handleClearForm();
       Swal.fire({
@@ -283,7 +290,7 @@ const Course: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (err) {
       handleClearForm();
       Swal.fire({
@@ -345,7 +352,7 @@ const Course: React.FC = () => {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          fetchData();
+          await refreshTableData();
         } catch (err) {
           Swal.fire({
             icon: 'error',
@@ -462,6 +469,7 @@ const Course: React.FC = () => {
         </div>
         <div className="max-w-full overflow-x-auto ">
           <DataTable
+            key={tableKey}
             data={data}
             columns={columns}
             className="display nowrap w-full"

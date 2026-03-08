@@ -331,46 +331,38 @@ const CourseDetail: React.FC = () => {
       <div className="rounded-sm border border-stroke bg-white px-5 py-6 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-6">
         <h1 className="text-2xl font-bold pb-5">Course Management</h1>
         <hr />
-        <div className="flex flex-col sm:flex-row mt-10 sm:gap-5">
-          <div className="w-full sm:w-1/3">
-            {dataCourse?.image && dataCourse.image !== '' ? (
-              <img
-                className="w-full h-75 object-cover rounded-lg border"
-                src={dataCourse.image}
-                alt="gambar"
-              />
-            ) : (
-              <img
-                className="w-full h-auto object-cover rounded-lg border"
-                src={PlaceholderImg}
-                alt="gambar"
-              />
-            )}
-          </div>
-          <div className="w-full mt-4 sm:w-2/3 sm:mt-0">
-            <div className="mb-2 text-lg font-semibold">
-              <table width="100%">
-                <tr>
-                  <td width="10%">Name</td>
-                  <td width="50%">{dataCourse?.name}</td>
-                </tr>
-                <tr>
-                  <td>Code</td>
-                  <td>{dataCourse?.code}</td>
-                </tr>
-                <tr>
-                  <td valign="top">Description</td>
-                  <td valign="top">{dataCourse?.description}</td>
-                </tr>
-                <tr>
-                  <td>Students</td>
-                  <td>{countStudent} Students</td>
-                </tr>
-                <tr>
-                  <td>Chapters</td>
-                  <td>{countChapter} Chapters</td>
-                </tr>
-              </table>
+        <div className="mt-8 overflow-hidden rounded-xl border border-stroke bg-slate-900 shadow-sm">
+          <div className="relative h-72 w-full">
+            <img
+              className="h-full w-full object-cover"
+              src={dataCourse?.image && dataCourse.image !== '' ? dataCourse.image : PlaceholderImg}
+              alt={dataCourse?.name || 'Course cover'}
+              onError={(e) => {
+                const target = e.currentTarget as HTMLImageElement;
+                target.src = PlaceholderImg;
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/45 to-slate-900/20" />
+
+            <div className="absolute bottom-0 left-0 right-0 p-5 text-white sm:p-7">
+              <div className="mb-2 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-medium uppercase tracking-wide">
+                {dataCourse?.code || 'Course'}
+              </div>
+              <h2 className="text-2xl font-bold leading-tight sm:text-3xl">
+                {dataCourse?.name || '-'}
+              </h2>
+              <p className="mt-2 max-w-3xl text-sm text-white/90 sm:text-base">
+                {dataCourse?.description || 'No description available.'}
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-2 text-xs sm:text-sm">
+                <div className="rounded-full bg-white/15 px-3 py-1.5 font-medium">
+                  {countStudent} Students
+                </div>
+                <div className="rounded-full bg-white/15 px-3 py-1.5 font-medium">
+                  {countChapter} Chapters
+                </div>
+              </div>
             </div>
           </div>
         </div>

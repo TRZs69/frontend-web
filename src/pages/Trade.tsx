@@ -17,6 +17,7 @@ const Trade: React.FC = () => {
   const [oldImageUrl, setOldImageUrl] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [tradeId, setTradeId] = useState<number>(0);
+  const [tableKey, setTableKey] = useState<number>(0);
 
   const selectStyle = `
   .custom-select {
@@ -41,8 +42,13 @@ const Trade: React.FC = () => {
     }
   };
 
+  const refreshTableData = async () => {
+    await fetchData();
+    setTableKey((prev) => prev + 1);
+  };
+
   useEffect(() => {
-    fetchData();
+    refreshTableData();
   }, []);
 
   const truncateText = (text: string, wordLimit: number): string => {
@@ -164,7 +170,7 @@ const Trade: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (err) {
       Swal.fire({
         icon: 'error',
@@ -269,7 +275,7 @@ const Trade: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (err) {
       handleClearForm();
       Swal.fire({
@@ -331,7 +337,7 @@ const Trade: React.FC = () => {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          fetchData();
+          await refreshTableData();
         } catch (err) {
           Swal.fire({
             icon: 'error',
@@ -440,6 +446,7 @@ const Trade: React.FC = () => {
         </div>
         <div className="max-w-full overflow-x-auto ">
           <DataTable
+            key={tableKey}
             data={data}
             columns={columns}
             className="display nowrap w-full"

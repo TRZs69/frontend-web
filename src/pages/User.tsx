@@ -29,6 +29,7 @@ export default function User() {
   const [trade, setTrade] = useState<TradeDto[]>();
   const [isLoadingInfo, setIsLoadingInfo] = useState<boolean>(false);
   const [userInfoCache, setUserInfoCache] = useState<Record<number, { badge: BadgeDto[], trade: TradeDto[] }>>({});
+  const [tableKey, setTableKey] = useState<number>(0);
 
   const style = `
     .swal2-container {
@@ -45,8 +46,13 @@ export default function User() {
     }
   };
 
+  const refreshTableData = async () => {
+    await fetchData();
+    setTableKey((prev) => prev + 1);
+  };
+
   useEffect(() => {
-    fetchData();
+    refreshTableData();
   }, []);
 
   const isFormValid = () => {
@@ -118,7 +124,7 @@ export default function User() {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (error) {
       console.error('Error while adding user: ', error);
       setIsAddModalOpen(false);
@@ -167,7 +173,7 @@ export default function User() {
         timerProgressBar: true,
         showConfirmButton: false,
       });
-      fetchData();
+      await refreshTableData();
     } catch (error) {
       console.error('Error while updating user: ', error);
       Swal.fire({
@@ -203,7 +209,7 @@ export default function User() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          fetchData();
+          await refreshTableData();
         } catch (error) {
           console.error('Error while deleting user: ', error);
         }
@@ -495,6 +501,7 @@ export default function User() {
 
         <div className="max-w-full overflow-x-auto ">
           <DataTable
+            key={tableKey}
             data={data}
             columns={columns}
             className="display nowrap w-full"
