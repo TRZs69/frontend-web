@@ -39,7 +39,7 @@ export default function User() {
 
   const fetchData = async () => {
     try {
-      const response = await api.get<UserDto[]>('/user');
+      const response = await api.get<UserDto[]>('/user', { skipCache: true });
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data: ', error);
@@ -151,15 +151,19 @@ export default function User() {
   };
 
   const handleEditUser = async () => {
-    const instructorId = role === 'INSTRUCTOR' ? instructor_id : '';
-    const studentId = role === 'STUDENT' ? student_id : '';
+    if (!isFormValid()) {
+      return;
+    }
+
+    const instructorId = role === 'INSTRUCTOR' ? instructor_id : null;
+    const studentId = role === 'STUDENT' ? student_id : null;
 
     const uploadData: EditUserDto = {
       name: name !== '' ? name : undefined,
       username: username !== '' ? username : undefined,
       role: role,
-      instructorId: instructorId !== '' ? instructorId : undefined,
-      studentId: studentId !== '' ? studentId : undefined,
+      instructorId: instructorId !== '' ? instructorId : null,
+      studentId: studentId !== '' ? studentId : null,
     };
 
     try {

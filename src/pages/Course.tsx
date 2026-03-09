@@ -26,10 +26,24 @@ const Course: React.FC = () => {
   const [courseId, setCourseId] = useState<number>();
   const [tableKey, setTableKey] = useState<number>(0);
 
+  const sanitizeFileName = (value: string): string => {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]/g, '_');
+  };
+
+  const buildImagePath = (file: File): string => {
+    const safeName = sanitizeFileName(file.name);
+    return `course/${Date.now()}-${safeName}`;
+  };
+
 
   const fetchUser = async () => {
     try {
-      const response = await api.get<UserDto>(`/user/${user.id}`);
+      const response = await api.get<UserDto>(`/user/${user.id}`, {
+        skipCache: true,
+      });
       setUserData(response.data);
       await fetchData(response.data); 
     } catch (error) {
@@ -39,7 +53,10 @@ const Course: React.FC = () => {
 
   const fetchData = async (currentUserData?: UserDto) => {
     try {
-      const response = await api.get<CourseDto[]>('course');
+      const response = await api.get<CourseDto[]>('/course', {
+        skipCache: true,
+        params: { _ts: Date.now() },
+      });
       let courseData = response.data;
       const activeUserData = currentUserData || userData;
 
@@ -128,8 +145,7 @@ const Course: React.FC = () => {
       return;
     }
 
-    const fileName = `${Date.now()}-${imageFile.name}`;
-    const filePath = `course/${fileName}`;
+    const filePath = buildImagePath(imageFile);
 
     try {
       const payload: AddCourseDto = {
@@ -144,7 +160,7 @@ const Course: React.FC = () => {
       // SQL berhasil, lanjutkan dengan upload gambar
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('finalproject')
-        .upload(filePath, imageFile);
+        .upload(filePath, imageFile, { upsert: true });
 
       if (uploadError) {
         if (uploadError instanceof Error) {
@@ -233,13 +249,12 @@ const Course: React.FC = () => {
         }
       }
 
-      const fileName = `${Date.now()}-${imageFile.name}`;
-      const filePath = `course/${fileName}`;
+      const filePath = buildImagePath(imageFile);
 
       try {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('finalproject')
-          .upload(filePath, imageFile);
+          .upload(filePath, imageFile, { upsert: true });
 
         if (uploadError) {
           handleClearForm();

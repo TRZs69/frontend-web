@@ -36,9 +36,21 @@ const Badge: React.FC = () => {
     padding-right: 28px;
   }`;
 
+  const sanitizeFileName = (value: string): string => {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]/g, '_');
+  };
+
+  const buildImagePath = (chapterIdValue: number, file: File): string => {
+    const safeName = sanitizeFileName(file.name);
+    return `badge/${chapterIdValue}/${Date.now()}-${safeName}`;
+  };
+
   const fetchData = async () => {
     try {
-      const response = await api.get<BadgeDto[]>('/badge');
+      const response = await api.get<BadgeDto[]>('/badge', { skipCache: true });
       setData(response.data);
     } catch (err) {
       console.error('Error while getting badge: ', err);
@@ -132,8 +144,7 @@ const Badge: React.FC = () => {
       return;
     }
 
-    const fileName = `${Date.now()}-${imageFile.name}`;
-    const filePath = `badge/${chapterId}/${fileName}`;
+    const filePath = buildImagePath(chapterId, imageFile);
 
     try {
       const uploadBadgeData: AddBadgeDto = {
@@ -149,7 +160,7 @@ const Badge: React.FC = () => {
       // SQL berhasil, lanjutkan dengan upload gambar
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('finalproject')
-        .upload(filePath, imageFile);
+        .upload(filePath, imageFile, { upsert: true });
 
       if (uploadError) {
         if (uploadError instanceof Error) {
@@ -259,13 +270,12 @@ const Badge: React.FC = () => {
         }
       }
 
-      const fileName = `${Date.now()}-${imageFile.name}`;
-      const filePath = `badge/${chapterId}/${fileName}`;
+      const filePath = buildImagePath(chapterId, imageFile);
 
       try {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('finalproject')
-          .upload(filePath, imageFile);
+          .upload(filePath, imageFile, { upsert: true });
 
         if (uploadError) {
           handleClearForm();

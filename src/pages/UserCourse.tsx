@@ -7,14 +7,22 @@ import DataTable from 'datatables.net-react';
 import { UsercourseDto } from '../dto/UsercourseDto';
 import { CourseDto } from '../dto/CourseDto';
 import Swal from 'sweetalert2';
+import axios from 'axios';
 
 const UserCourse: React.FC = () => {
   const { id } = useParams();
   const [dataCourse, setDataCourse] = useState<CourseDto>();
   const [data, setData] = useState<UserDto[]>([]);
   const [studentCourse, setStudentCourse] = useState<UserDto[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>();
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [userId, setUserId] = useState<number>(0);
+
+  const blurActiveElement = () => {
+    const activeElement = document.activeElement;
+    if (activeElement instanceof HTMLElement) {
+      activeElement.blur();
+    }
+  };
 
   const fetchCourse = async () => {
     const courseResponse = await api.get<CourseDto>(`/course/${id}`);
@@ -55,6 +63,12 @@ const UserCourse: React.FC = () => {
   }
 
   const handleAddUserCourse = async () => {
+    if (userId <= 0) {
+      blurActiveElement();
+      await Swal.fire('Validation', 'Please select a student first.', 'warning');
+      return;
+    }
+
     const uploadData: UsercourseDto = {
       userId: userId,
       courseId: Number(id),
@@ -66,14 +80,28 @@ const UserCourse: React.FC = () => {
 
       handleClearForm();
       fetchData();
+      blurActiveElement();
       Swal.fire('Success!', 'Student has been added to the course.', 'success');
     } catch (error) {
       console.error('Error while adding user course :', error);
-      Swal.fire('Error!', 'Failed to add student to the course.', 'error');
+
+      let errorMessage = 'Failed to add student to the course.';
+      if (axios.isAxiosError(error)) {
+        const statusCode = error.response?.status;
+        if (statusCode === 409) {
+          errorMessage = 'Student is already enrolled in this course.';
+        } else if (statusCode === 400) {
+          errorMessage = String(error.response?.data?.data || 'Invalid user/course data.');
+        }
+      }
+
+      blurActiveElement();
+      Swal.fire('Error!', errorMessage, 'error');
     }
   }
 
   const handleDeleteUserCourse = async (userId: number) => {
+    blurActiveElement();
     const result = await Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -96,16 +124,22 @@ const UserCourse: React.FC = () => {
         const userCourseId = userCourses[0].id;
         await api.delete(`/usercourse/${userCourseId}`);
         fetchData();
+        blurActiveElement();
         Swal.fire('Deleted!', 'User has been removed from the course.', 'success');
       } else {
         console.error('User course mapping not found');
+        blurActiveElement();
         Swal.fire('Error', 'User course mapping not found', 'error');
       }
     } catch (error) {
       console.error('Error while deleting user course:', error);
+      blurActiveElement();
       Swal.fire('Error!', 'Failed to delete user course.', 'error');
     }
   };
+
+  const enrolledStudentIds = new Set(studentCourse.map((student) => student.id));
+  const availableStudents = data.filter((student) => !enrolledStudentIds.has(student.id));
 
   const columns = [
     { data: 'name', title: 'Name' },
@@ -220,13 +254,16 @@ const UserCourse: React.FC = () => {
                     className="relative z-20 w-full appearance-none rounded-lg border border-stroke bg-transparent py-3 px-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
                     onChange={(e) => setUserId(Number(e.target.value))}
                   >
-                    <option value="">Select a user</option>
-                    {data.map((user) => (
+                    <option value={0}>Select a user</option>
+                    {availableStudents.map((user) => (
                       <option key={user.id} value={user.id}>
                         {user.name}
                       </option>
                     ))}
                   </select>
+                  {availableStudents.length === 0 && (
+                    <p className="mt-2 text-sm text-gray-500">All students are already enrolled in this course.</p>
+                  )}
                 </div>
 
                 <div className="flex justify-end mt-6">

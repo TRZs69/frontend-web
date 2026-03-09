@@ -19,6 +19,18 @@ const Trade: React.FC = () => {
   const [tradeId, setTradeId] = useState<number>(0);
   const [tableKey, setTableKey] = useState<number>(0);
 
+  const sanitizeFileName = (value: string): string => {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9._-]/g, '_');
+  };
+
+  const buildImagePath = (file: File): string => {
+    const safeName = sanitizeFileName(file.name);
+    return `trade/${Date.now()}-${safeName}`;
+  };
+
   const selectStyle = `
   .custom-select {
     appearance: none;
@@ -35,7 +47,7 @@ const Trade: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await api.get<TradeDto[]>('/trade');
+      const response = await api.get<TradeDto[]>('/trade', { skipCache: true });
       setData(response.data);
     } catch (err) {
       console.error('Error while getting trade: ', err);
@@ -118,8 +130,7 @@ const Trade: React.FC = () => {
       return;
     }
 
-    const fileName = `${Date.now()}-${imageFile.name}`;
-    const filePath = `trade/${fileName}`;
+    const filePath = buildImagePath(imageFile);
 
     try {
       const payload: AddTradeDto = {
@@ -133,7 +144,7 @@ const Trade: React.FC = () => {
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('finalproject')
-        .upload(filePath, imageFile);
+        .upload(filePath, imageFile, { upsert: true });
 
       if (uploadError) {
         if (uploadError instanceof Error) {
@@ -218,13 +229,12 @@ const Trade: React.FC = () => {
         }
       }
 
-      const fileName = `${Date.now()}-${imageFile.name}`;
-      const filePath = `trade/${fileName}`;
+      const filePath = buildImagePath(imageFile);
 
       try {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('finalproject')
-          .upload(filePath, imageFile);
+          .upload(filePath, imageFile, { upsert: true });
 
         if (uploadError) {
           handleClearForm();

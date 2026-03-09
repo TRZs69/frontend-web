@@ -11,6 +11,12 @@ const api = axios.create({
 const originalGet = api.get;
 
 api.get = async function (url: string, config?: any) {
+  const skipCache = Boolean(config?.skipCache);
+
+  if (skipCache) {
+    return originalGet.call(this, url, config);
+  }
+
   const cacheKey = `api_cache_${url}`;
   const cachedData = localStorage.getItem(cacheKey);
 
