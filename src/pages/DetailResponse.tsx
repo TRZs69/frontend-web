@@ -4,6 +4,7 @@ import { CourseDto } from '../dto/CourseDto';
 import { useEffect, useState } from 'react';
 import { AssessmentDto, Question } from '../dto/AssessmentDto';
 import { UserDto } from '../dto/UserDto';
+import SectionLoader from '../components/SectionLoader';
 
 const DetailResponse = () => {
   const { courseId, assessId, userId } = useParams();
@@ -13,6 +14,7 @@ const DetailResponse = () => {
   const [allQuestion, setAllQuestion] = useState<Question[]>([]);
   const [allAnswer, setAllAnswer] = useState<string[]>([]);
   const letters: string = 'abcdefghijklmnopqrstuvwxyz';
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const fetchUser = async () => {
     try {
@@ -60,10 +62,18 @@ const DetailResponse = () => {
   };
 
   useEffect(() => {
-    fetchCourse();
-    fetchAssess();
-    fetchUser();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await Promise.all([fetchCourse(), fetchAssess(), fetchUser()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading response details..." />;
+  }
 
   return (
     <div>

@@ -6,6 +6,7 @@ import DataTable from 'datatables.net-react';
 import { AssignmentDto } from '../dto/AssignmentDto';
 import { AssessResponseDto } from '../dto/AssessResponseDto';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const AssignmentResponse = () => {
   const { courseId, assignId } = useParams();
@@ -17,6 +18,7 @@ const AssignmentResponse = () => {
   const [score, setScore] = useState<number>();
   const [feedback, setFeedback] = useState<string>();
   const [userchapterId, setUserchapterId] = useState<number>();
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const fetchCourse = async () => {
     try {
@@ -93,8 +95,13 @@ const AssignmentResponse = () => {
   };
 
   useEffect(() => {
-    fetchCourse();
-    fetchAssign();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await Promise.all([fetchCourse(), fetchAssign()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   const truncateText = (text: string, wordLimit: number): string => {
@@ -197,6 +204,10 @@ const AssignmentResponse = () => {
       },
     },
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading assignment responses..." />;
+  }
 
   return (
     <div>

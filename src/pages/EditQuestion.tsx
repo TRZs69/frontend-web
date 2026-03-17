@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/api';
 import { AssessmentDto, Question } from '../dto/AssessmentDto';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const EditQuestion: React.FC = () => {
   const { courseId, id, index } = useParams();
@@ -10,6 +11,7 @@ const EditQuestion: React.FC = () => {
   const [question, setQuestion] = useState<Question>({} as Question);
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [newOption, setNewOption] = useState<string>('');
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const selectStyle = `
   .custom-select {
@@ -37,10 +39,16 @@ const EditQuestion: React.FC = () => {
         }
       } catch (err) {
         console.error('Error fetching assessment:', err);
+      } finally {
+        setIsSectionLoading(false);
       }
     };
     fetchData();
   }, [id, index]);
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading question editor..." />;
+  }
 
   const handleSave = async () => {
     try {

@@ -8,6 +8,7 @@ import { UsercourseDto } from '../dto/UsercourseDto';
 import { CourseDto } from '../dto/CourseDto';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import SectionLoader from '../components/SectionLoader';
 
 const UserCourse: React.FC = () => {
   const { id } = useParams();
@@ -16,6 +17,7 @@ const UserCourse: React.FC = () => {
   const [studentCourse, setStudentCourse] = useState<UserDto[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
   const [userId, setUserId] = useState<number>(0);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const blurActiveElement = () => {
     const activeElement = document.activeElement;
@@ -51,9 +53,13 @@ const UserCourse: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchStudent();
-    fetchCourse();
-    fetchData();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await Promise.all([fetchStudent(), fetchCourse(), fetchData()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   const handleClearForm = () => {
@@ -200,6 +206,10 @@ const UserCourse: React.FC = () => {
       },
     },
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading students..." />;
+  }
 
   return (
     <div>

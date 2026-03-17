@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { supabase } from '../api/supabase';
 import { UserDto } from '../dto/UserDto';
 import { User } from '@supabase/supabase-js';
+import SectionLoader from '../components/SectionLoader';
 
 const Course: React.FC = () => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const Course: React.FC = () => {
   const [desc, setDesc] = useState<string>();
   const [courseId, setCourseId] = useState<number>();
   const [tableKey, setTableKey] = useState<number>(0);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const sanitizeFileName = (value: string): string => {
     return value
@@ -79,7 +81,13 @@ const Course: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchUser();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await fetchUser();
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   const handleEditModal = (data: CourseDto) => {
@@ -466,6 +474,10 @@ const Course: React.FC = () => {
       },
     },
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading courses..." />;
+  }
 
   return (
     <div>

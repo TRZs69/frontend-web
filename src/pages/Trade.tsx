@@ -5,6 +5,7 @@ import PlaceholderImg from '../images/placeholder-image.png';
 import { supabase } from '../api/supabase';
 import { AddTradeDto, TradeDto, UpdateTradeDto } from '../dto/TradeDto';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const Trade: React.FC = () => {
   const [data, setData] = useState<TradeDto[]>([]);
@@ -18,6 +19,7 @@ const Trade: React.FC = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [tradeId, setTradeId] = useState<number>(0);
   const [tableKey, setTableKey] = useState<number>(0);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const sanitizeFileName = (value: string): string => {
     return value
@@ -60,7 +62,13 @@ const Trade: React.FC = () => {
   };
 
   useEffect(() => {
-    refreshTableData();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await refreshTableData();
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   const truncateText = (text: string, wordLimit: number): string => {
@@ -438,6 +446,10 @@ const Trade: React.FC = () => {
       },
     },
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading trades..." />;
+  }
 
   return (
     <div>

@@ -7,6 +7,7 @@ import { CourseDto } from '../dto/CourseDto';
 import { AddChapterDto, ChapterDto, UpdateChapterDto } from '../dto/ChapterDto';
 import DT from 'datatables.net-dt';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 DataTable.use(DT);
 
@@ -32,6 +33,7 @@ const CourseDetail: React.FC = () => {
   });
   const [name, setName] = useState<string>();
   const [desc, setDesc] = useState<string>();
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const style = `
     .swal2-container {
@@ -70,7 +72,13 @@ const CourseDetail: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await fetchData();
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, [id]);
 
   const handleClearForm = () => {
@@ -318,6 +326,10 @@ const CourseDetail: React.FC = () => {
     }
     return text;
   };
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading course details..." />;
+  }
 
   return (
     <div>

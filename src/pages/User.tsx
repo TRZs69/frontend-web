@@ -7,6 +7,7 @@ import DT from 'datatables.net-dt';
 import Swal from 'sweetalert2';
 import { BadgeDto } from '../dto/BadgeDto';
 import { TradeDto } from '../dto/TradeDto';
+import SectionLoader from '../components/SectionLoader';
 
 DataTable.use(DT);
 
@@ -30,6 +31,7 @@ export default function User() {
   const [isLoadingInfo, setIsLoadingInfo] = useState<boolean>(false);
   const [userInfoCache, setUserInfoCache] = useState<Record<number, { badge: BadgeDto[], trade: TradeDto[] }>>({});
   const [tableKey, setTableKey] = useState<number>(0);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const style = `
     .swal2-container {
@@ -52,7 +54,13 @@ export default function User() {
   };
 
   useEffect(() => {
-    refreshTableData();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await refreshTableData();
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   const isFormValid = () => {
@@ -484,6 +492,10 @@ export default function User() {
         ]
         : []),
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading users..." />;
+  }
 
   return (
     <div>

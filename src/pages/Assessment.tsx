@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { AssessmentDto, Question } from '../dto/AssessmentDto';
 import { CourseDto } from '../dto/CourseDto';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const Assessment: React.FC = () => {
   const navigate = useNavigate();
@@ -249,7 +250,7 @@ const Assessment: React.FC = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <SectionLoader message="Loading assessment..." />;
   }
 
   if (error) {

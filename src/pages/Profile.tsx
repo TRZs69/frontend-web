@@ -5,10 +5,12 @@ import api from '../api/api';
 import { UserDto } from '../dto/UserDto';
 import { supabase } from '../api/supabase';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const Profile = () => {
   const localUser = JSON.parse(localStorage.getItem('user') || '{}');
   const [user, setUser] = useState<UserDto | null>(null);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -19,12 +21,18 @@ const Profile = () => {
         }
       } catch (error) {
         console.error('Failed to fetch user data:', error);
+      } finally {
+        setIsSectionLoading(false);
       }
     };
     fetchUser();
   }, [localUser.id]);
 
   const [uploading, setUploading] = useState(false);
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading profile..." />;
+  }
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {

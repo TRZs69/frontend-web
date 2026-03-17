@@ -5,12 +5,14 @@ import { CourseDto } from '../dto/CourseDto';
 import { useEffect, useState } from 'react';
 import { AssessmentDto } from '../dto/AssessmentDto';
 import { AssessResponseDto } from '../dto/AssessResponseDto';
+import SectionLoader from '../components/SectionLoader';
 
 const AssessmentResponse: React.FC = () => {
   const { courseId, assessId } = useParams();
   const [dataCourse, setDataCourse] = useState<CourseDto>({} as CourseDto);
   const navigate = useNavigate();
   const [dataAssessResponse, setDataAssessResponse] = useState<AssessResponseDto[]>([]);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const fetchCourse = async () => {
     try {
@@ -46,8 +48,13 @@ const AssessmentResponse: React.FC = () => {
   }
 
   useEffect(() => {
-    fetchCourse();
-    fetchAssess();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await Promise.all([fetchCourse(), fetchAssess()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, [assessId, courseId]);
 
   const columns = [
@@ -123,6 +130,10 @@ const AssessmentResponse: React.FC = () => {
       },
     },
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading assessment responses..." />;
+  }
 
   return (
     <div>

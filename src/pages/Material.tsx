@@ -16,6 +16,7 @@ import 'froala-editor/js/plugins/code_beautifier.min.js';
 import 'froala-editor/js/plugins/code_view.min.js';
 import { CourseDto } from '../dto/CourseDto';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const SUPABASE_PUBLIC_MATERIALS_BASE =
   `${import.meta.env.VITE_SUPABASE_URL || 'https://itarozdimxukkhwxruti.supabase.co'}` +
@@ -64,6 +65,7 @@ const Material: React.FC = () => {
   const [materialExists, setMaterialExists] = useState(false);
   const [froalaLoading, setFroalaLoading] = useState(true);
   const [froalaRender, setFroalaRender] = useState(false);
+  const [isSectionLoading, setIsSectionLoading] = useState(true);
 
   const fetchCourse = async () => {
     const responseCourse = await api.get<CourseDto>(`/course/${courseId}`);
@@ -119,10 +121,18 @@ const Material: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (id) {
-      fetchCourse();
-      fetchData();
-    }
+    const loadInitialData = async () => {
+      if (!id) {
+        setIsSectionLoading(false);
+        return;
+      }
+
+      setIsSectionLoading(true);
+      await Promise.all([fetchCourse(), fetchData()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, [id, fetchData]);
 
   useEffect(() => {
@@ -187,6 +197,10 @@ const Material: React.FC = () => {
       console.error('Error saving material:', error);
     }
   }, [id, materialData, materialExists, fetchData]);
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading material..." />;
+  }
 
   return (
     <div>

@@ -9,6 +9,7 @@ import {
 import { supabase } from '../api/supabase';
 import { CourseDto } from '../dto/CourseDto';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 interface AssignmentProps {}
 
@@ -24,6 +25,7 @@ const Assignment: React.FC<AssignmentProps> = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const fetchCourse = async () => {
     const responseCourse = await api.get<CourseDto>(`/course/${courseId}`);
@@ -60,10 +62,18 @@ const Assignment: React.FC<AssignmentProps> = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      fetchCourse();
-      fetchData();
-    }
+    const loadInitialData = async () => {
+      if (!id) {
+        setIsSectionLoading(false);
+        return;
+      }
+
+      setIsSectionLoading(true);
+      await Promise.all([fetchCourse(), fetchData()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, [id]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -190,6 +200,10 @@ const Assignment: React.FC<AssignmentProps> = () => {
     setIsEditing(false);
     setErrorMessage('');
   };
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading assignment..." />;
+  }
 
   return (
     <div>

@@ -7,6 +7,7 @@ import { ChapterDto, UpdateChapterDto } from '../dto/ChapterDto';
 import PlaceholderImg from '../images/placeholder-image.png';
 import { supabase } from '../api/supabase';
 import Swal from 'sweetalert2';
+import SectionLoader from '../components/SectionLoader';
 
 const Badge: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -25,6 +26,7 @@ const Badge: React.FC = () => {
   const [chapterId, setChapterId] = useState<number>(0);
   const [badgeId, setBadgeId] = useState<number>(0);
   const [tableKey, setTableKey] = useState<number>(0);
+  const [isSectionLoading, setIsSectionLoading] = useState<boolean>(true);
 
   const selectStyle = `
   .custom-select {
@@ -98,8 +100,13 @@ const Badge: React.FC = () => {
   };
 
   useEffect(() => {
-    refreshTableData();
-    fetchCourse();
+    const loadInitialData = async () => {
+      setIsSectionLoading(true);
+      await Promise.all([refreshTableData(), fetchCourse()]);
+      setIsSectionLoading(false);
+    };
+
+    loadInitialData();
   }, []);
 
   useEffect(() => {
@@ -505,6 +512,10 @@ const Badge: React.FC = () => {
       },
     },
   ];
+
+  if (isSectionLoading) {
+    return <SectionLoader message="Loading badges..." />;
+  }
 
   return (
     <div>
