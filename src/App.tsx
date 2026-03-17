@@ -11,7 +11,6 @@ import Assignment from './pages/Assignment';
 import User from './pages/User';
 import CourseDetail from './pages/CourseDetail';
 import UserCourse from './pages/UserCourse';
-import Testing from './pages/Testing';
 import EditQuestion from './pages/EditQuestion';
 import Badge from './pages/Badge';
 import Login from './pages/Login';
