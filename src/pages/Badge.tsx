@@ -19,7 +19,6 @@ const Badge: React.FC = () => {
   const [type, setType] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE'>(
     'BEGINNER',
   );
-  const [elo, setElo] = useState<number>(750);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [oldImageUrl, setOldImageUrl] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -71,18 +70,6 @@ const Badge: React.FC = () => {
       default:
         return 0;
     }
-  };
-
-  const resolveTypeFromElo = (
-    eloValue: number,
-  ): 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE' => {
-    if (eloValue <= 1000) {
-      return 'BEGINNER';
-    }
-    if (eloValue <= 1400) {
-      return 'INTERMEDIATE';
-    }
-    return 'ADVANCE';
   };
 
   const fetchData = async () => {
@@ -155,7 +142,6 @@ const Badge: React.FC = () => {
   const handleClearForm = () => {
     setName('');
     setType('BEGINNER');
-    setElo(750);
     setCourseId(0);
     setChapterId(0);
     setIsAddModalOpen(false);
@@ -166,11 +152,9 @@ const Badge: React.FC = () => {
   };
 
   const handleEditModal = (data: BadgeDto) => {
-    const resolvedElo = data.elo || resolveBadgeElo(data.name);
     setBadgeId(data.id);
     setName(data.name);
-    setElo(resolvedElo);
-    setType(resolveTypeFromElo(resolvedElo));
+    setType(data.type);
     setCourseId(data.courseId);
     setChapterId(data.chapterId);
     setOldImageUrl(data.image);
@@ -356,11 +340,9 @@ const Badge: React.FC = () => {
       }
     }
 
-    const mappedType = resolveTypeFromElo(elo);
-
     const uploadData: UpdateBadgeDto = {
       name: name !== '' ? name : undefined,
-      type: mappedType,
+      type: type,
       image: imageUrl || undefined,
     };
 
@@ -373,11 +355,11 @@ const Badge: React.FC = () => {
 
       let checkpoint = 0;
 
-      if (mappedType === 'BEGINNER') {
+      if (type === 'BEGINNER') {
         checkpoint = 1;
-      } else if (mappedType === 'INTERMEDIATE') {
+      } else if (type === 'INTERMEDIATE') {
         checkpoint = 2;
-      } else if (mappedType === 'ADVANCE') {
+      } else if (type === 'ADVANCE') {
         checkpoint = 3;
       }
 
@@ -758,29 +740,6 @@ const Badge: React.FC = () => {
                       className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                       placeholder="Input Name"
                     />
-                  </div>
-
-                  <div className="mb-4">
-                    <label
-                      htmlFor="elo"
-                      className="mb-3 block text-black dark:text-white"
-                    >
-                      ELO
-                    </label>
-                    <select
-                      id="elo"
-                      value={elo}
-                      className="relative z-20 w-full appearance-none rounded-lg border border-stroke bg-transparent py-3 px-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input custom-select"
-                      onChange={(e) => setElo(Number(e.target.value))}
-                    >
-                      <option value={750}>750 - Beginner</option>
-                      <option value={1000}>1000 - Basic Understanding</option>
-                      <option value={1200}>1200 - Developing Learner</option>
-                      <option value={1400}>1400 - Intermediate</option>
-                      <option value={1600}>1600 - Proficient</option>
-                      <option value={1800}>1800 - Advanced</option>
-                      <option value={2000}>2000 - Mastery</option>
-                    </select>
                   </div>
 
                   <div className="mb-4">
