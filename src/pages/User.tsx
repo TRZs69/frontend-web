@@ -22,6 +22,7 @@ export default function User() {
     'STUDENT',
   );
   const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [student_id, setStudent_id] = useState<string>('');
   const [instructor_id, setInstructor_id] = useState<string>('');
   const [userId, setUserId] = useState<number>();
@@ -63,7 +64,31 @@ export default function User() {
     loadInitialData();
   }, []);
 
-  const isFormValid = () => {
+  const isFormValid = (isPasswordRequired: boolean) => {
+    if (isPasswordRequired && !password) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Please fill in password.',
+        timer: 1500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+
+    if (password && password.length < 6) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Warning',
+        text: 'Password must be at least 6 characters.',
+        timer: 1500,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+      return false;
+    }
+
     if (role === 'INSTRUCTOR') {
       if (!name || !username || !instructor_id) {
         Swal.fire({
@@ -106,14 +131,14 @@ export default function User() {
   };
 
   const handleAddUser = async () => {
-    if (!isFormValid()) {
+    if (!isFormValid(true)) {
       return;
     }
 
     const uploadData: AddUserDto = {
       name: name,
       username: username,
-      password: 'password',
+      password: password,
       role: role,
       instructor_id: instructor_id,
       student_id: student_id,
@@ -150,6 +175,7 @@ export default function User() {
   const handleEditModal = (user: UserDto) => {
     setName(user.name);
     setUsername(user.username);
+    setPassword('');
     setRole(user.role);
     setInstructor_id(user.instructorId || '');
     setStudent_id(user.studentId || '');
@@ -159,7 +185,7 @@ export default function User() {
   };
 
   const handleEditUser = async () => {
-    if (!isFormValid()) {
+    if (!isFormValid(false)) {
       return;
     }
 
@@ -169,6 +195,7 @@ export default function User() {
     const uploadData: EditUserDto = {
       name: name !== '' ? name : undefined,
       username: username !== '' ? username : undefined,
+      password: password !== '' ? password : undefined,
       role: role,
       instructorId: instructorId !== '' ? instructorId : null,
       studentId: studentId !== '' ? studentId : null,
@@ -275,6 +302,7 @@ export default function User() {
     setName('');
     setRole('STUDENT');
     setUsername('');
+    setPassword('');
     setInstructor_id('');
     setStudent_id('');
     setPoint(undefined);
@@ -579,6 +607,24 @@ export default function User() {
 
                 <div className="mb-4">
                   <label
+                    htmlFor="password"
+                    className="mb-3 block text-black dark:text-white"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Input Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
                     htmlFor="role"
                     className="mb-3 block text-black dark:text-white"
                   >
@@ -710,6 +756,27 @@ export default function User() {
                     onChange={(e) => setUsername(e.target.value)}
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="password-edit"
+                    className="mb-3 block text-black dark:text-white"
+                  >
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    id="password-edit"
+                    name="password"
+                    placeholder="Input new password (optional)"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  />
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    Leave empty if you do not want to change password.
+                  </p>
                 </div>
 
                 <div className="mb-4">

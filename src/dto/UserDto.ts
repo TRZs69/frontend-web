@@ -27,6 +27,7 @@ export interface AddUserDto {
 
 export interface EditUserDto {
   username?: string;
+  password?: string;
   name?: string;
   role?: "ADMIN" | "STUDENT" | "INSTRUCTOR";
   studentId?: string | null;
