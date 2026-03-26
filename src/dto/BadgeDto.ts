@@ -2,6 +2,7 @@ export interface BadgeDto {
   id: number;
   name: string;
   image: string;
+  elo?: number;
   type: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE';
   courseId: number;
   chapterId: number;

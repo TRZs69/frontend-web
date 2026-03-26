@@ -50,10 +50,36 @@ const Badge: React.FC = () => {
     return `badge/${chapterIdValue}/${Date.now()}-${safeName}`;
   };
 
+  const resolveBadgeElo = (badgeName: string): number => {
+    const normalized = String(badgeName || '').trim().toLowerCase();
+    switch (normalized) {
+      case 'beginner':
+        return 750;
+      case 'basic understanding':
+        return 1000;
+      case 'developing learner':
+        return 1200;
+      case 'intermediate':
+        return 1400;
+      case 'proficient':
+        return 1600;
+      case 'advanced':
+        return 1800;
+      case 'mastery':
+        return 2000;
+      default:
+        return 0;
+    }
+  };
+
   const fetchData = async () => {
     try {
       const response = await api.get<BadgeDto[]>('/badge', { skipCache: true });
-      setData(response.data);
+      const withElo = response.data.map((item) => ({
+        ...item,
+        elo: resolveBadgeElo(item.name),
+      }));
+      setData(withElo);
     } catch (err) {
       console.error('Error while getting badge: ', err);
     }
@@ -440,21 +466,7 @@ const Badge: React.FC = () => {
 
   const columns = [
     { data: 'name', title: 'Name' },
-    { data: 'type', title: 'Type' },
-    {
-      data: 'course.name',
-      title: 'Course',
-      createdCell: (cell: HTMLTableCellElement, cellData: string) => {
-        cell.textContent = truncateText(cellData, 5);
-      },
-    },
-    {
-      data: 'chapter.name',
-      title: 'Chapter',
-      createdCell: (cell: HTMLTableCellElement, cellData: string) => {
-        cell.textContent = truncateText(cellData, 5);
-      },
-    },
+    { data: 'elo', title: 'ELO' },
     {
       data: null,
       title: 'Actions',
@@ -539,7 +551,7 @@ const Badge: React.FC = () => {
             columns={columns}
             className="display nowrap w-full"
             options={{
-              order: [[5, 'desc']],
+              order: [[1, 'asc']],
             }}
           />
         </div>
