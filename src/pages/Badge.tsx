@@ -19,6 +19,7 @@ const Badge: React.FC = () => {
   const [type, setType] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE'>(
     'BEGINNER',
   );
+  const [elo, setElo] = useState<number>(750);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [oldImageUrl, setOldImageUrl] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -70,6 +71,18 @@ const Badge: React.FC = () => {
       default:
         return 0;
     }
+  };
+
+  const resolveTypeFromElo = (
+    eloValue: number,
+  ): 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE' => {
+    if (eloValue <= 1000) {
+      return 'BEGINNER';
+    }
+    if (eloValue <= 1400) {
+      return 'INTERMEDIATE';
+    }
+    return 'ADVANCE';
   };
 
   const fetchData = async () => {
@@ -142,6 +155,7 @@ const Badge: React.FC = () => {
   const handleClearForm = () => {
     setName('');
     setType('BEGINNER');
+    setElo(750);
     setCourseId(0);
     setChapterId(0);
     setIsAddModalOpen(false);
@@ -152,9 +166,11 @@ const Badge: React.FC = () => {
   };
 
   const handleEditModal = (data: BadgeDto) => {
+    const resolvedElo = data.elo || resolveBadgeElo(data.name);
     setBadgeId(data.id);
     setName(data.name);
-    setType(data.type);
+    setElo(resolvedElo);
+    setType(resolveTypeFromElo(resolvedElo));
     setCourseId(data.courseId);
     setChapterId(data.chapterId);
     setOldImageUrl(data.image);
@@ -340,11 +356,11 @@ const Badge: React.FC = () => {
       }
     }
 
+    const mappedType = resolveTypeFromElo(elo);
+
     const uploadData: UpdateBadgeDto = {
       name: name !== '' ? name : undefined,
-      type: type,
-      courseId: courseId,
-      chapterId: chapterId,
+      type: mappedType,
       image: imageUrl || undefined,
     };
 
@@ -357,11 +373,11 @@ const Badge: React.FC = () => {
 
       let checkpoint = 0;
 
-      if (type === 'BEGINNER') {
+      if (mappedType === 'BEGINNER') {
         checkpoint = 1;
-      } else if (type === 'INTERMEDIATE') {
+      } else if (mappedType === 'INTERMEDIATE') {
         checkpoint = 2;
-      } else if (type === 'ADVANCE') {
+      } else if (mappedType === 'ADVANCE') {
         checkpoint = 3;
       }
 
@@ -746,74 +762,24 @@ const Badge: React.FC = () => {
 
                   <div className="mb-4">
                     <label
-                      htmlFor="role"
+                      htmlFor="elo"
                       className="mb-3 block text-black dark:text-white"
                     >
-                      Type
+                      ELO
                     </label>
                     <select
-                      name="role"
-                      value={type}
+                      id="elo"
+                      value={elo}
                       className="relative z-20 w-full appearance-none rounded-lg border border-stroke bg-transparent py-3 px-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input custom-select"
-                      onChange={(e) =>
-                        setType(
-                          e.target.value as
-                            | 'BEGINNER'
-                            | 'INTERMEDIATE'
-                            | 'ADVANCE',
-                        )
-                      }
+                      onChange={(e) => setElo(Number(e.target.value))}
                     >
-                      <option value="BEGINNER">BEGINNER</option>
-                      <option value="INTERMEDIATE">INTERMEDIATE</option>
-                      <option value="ADVANCE">ADVANCE</option>
-                    </select>
-                  </div>
-
-                  <div className="mb-4">
-                    <label
-                      htmlFor="course"
-                      className="mb-3 block text-black dark:text-white"
-                    >
-                      Course
-                    </label>
-                    <select
-                      name="course"
-                      value={courseId}
-                      className="relative z-20 w-full appearance-none rounded-lg border border-stroke bg-transparent py-3 px-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input custom-select"
-                      onChange={(e) => {
-                        setCourseId(Number(e.target.value));
-                        setChapter([]);
-                      }}
-                    >
-                      <option value={undefined}>Pilih Course</option>
-                      {course.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="mb-4">
-                    <label
-                      htmlFor="chapter"
-                      className="mb-3 block text-black dark:text-white"
-                    >
-                      Chapter
-                    </label>
-                    <select
-                      name="chapter"
-                      value={chapterId}
-                      className="relative z-20 w-full appearance-none rounded-lg border border-stroke bg-transparent py-3 px-5 pr-10 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input custom-select"
-                      onChange={(e) => setChapterId(Number(e.target.value))}
-                    >
-                      <option value={undefined}>Pilih Chapter</option>
-                      {chapter.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
+                      <option value={750}>750 - Beginner</option>
+                      <option value={1000}>1000 - Basic Understanding</option>
+                      <option value={1200}>1200 - Developing Learner</option>
+                      <option value={1400}>1400 - Intermediate</option>
+                      <option value={1600}>1600 - Proficient</option>
+                      <option value={1800}>1800 - Advanced</option>
+                      <option value={2000}>2000 - Mastery</option>
                     </select>
                   </div>
 
