@@ -19,6 +19,7 @@ import Profile from './pages/Profile';
 import AssessmentResponse from './pages/AssessmentResponse';
 import DetailResponse from './pages/DetailResponse';
 import AssignmentResponse from './pages/AssignmentResponse';
+import StudentLogs from './pages/StudentLogs';
 import SignIn from './pages/Authentication/SignIn';
 
 function App() {
@@ -173,6 +174,15 @@ function App() {
                     <>
                       <PageTitle title="Profile" />
                       <Profile />
+                    </>
+                  }
+                />
+                <Route
+                  path="/student-logs"
+                  element={
+                    <>
+                      <PageTitle title="Student Logs" />
+                      <StudentLogs />
                     </>
                   }
                 />

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import LogoPng from '../../images/logo/logo-png.png';
-import { FaUser, FaBookOpen, FaMedal, FaExchangeAlt } from 'react-icons/fa';
+import { FaUser, FaBookOpen, FaMedal, FaExchangeAlt, FaClipboardList } from 'react-icons/fa';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -12,6 +12,9 @@ interface SidebarProps {
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
   const { pathname } = location;
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const role = user.role;
 
   const trigger = useRef<any>(null);
   const sidebar = useRef<any>(null);
@@ -159,6 +162,22 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                 </NavLink>
               </li>
               {/* <!-- Menu Item Chapter --> */}
+
+              {/* <!-- Student Logs (Admin & Instructor Only) --> */}
+              {(role === 'ADMIN' || role === 'INSTRUCTOR') && (
+                <li>
+                  <NavLink
+                    to="/student-logs"
+                    className={({ isActive }) =>
+                      `group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${isActive ? 'bg-graydark dark:bg-meta-4' : ''
+                      }`
+                    }
+                  >
+                    <FaClipboardList className="fill-current" size={18} />
+                    Student Logs
+                  </NavLink>
+                </li>
+              )}
 
 
             </ul>
