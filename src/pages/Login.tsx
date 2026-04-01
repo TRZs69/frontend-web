@@ -50,9 +50,17 @@ const Login: React.FC = () => {
     }
   };
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault(); 
-  await handleLogin();
+  setLoading(true);
+
+  try{
+    await handleLogin();}
+  finally{
+    setLoading(false);
+  }
 };
 
   return (
@@ -241,9 +249,10 @@ const Login: React.FC = () => {
               <div className="mb-5">
                 <button
                   type="submit"
+                  disabled={loading}
                   className="text w-full cursor-pointer rounded-lg border font-medium border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                 >
-                  Sign In
+                  {loading ? "Signing in..." : "Sign In"}
                 </button>
               </div>
               </form>
