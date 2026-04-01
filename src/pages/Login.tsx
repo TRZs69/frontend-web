@@ -50,6 +50,11 @@ const Login: React.FC = () => {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault(); 
+  await handleLogin();
+};
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-75">
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -202,7 +207,7 @@ const Login: React.FC = () => {
               <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
                 Sign In to Levelearn Web
               </h2>
-
+            <form onSubmit =  {handleSubmit}>
               <div className="mb-4">
                 <label className="mb-2.5 block font-medium text-black dark:text-white">
                   Username
@@ -235,12 +240,13 @@ const Login: React.FC = () => {
 
               <div className="mb-5">
                 <button
-                  onClick={() => handleLogin()}
+                  type="submit"
                   className="text w-full cursor-pointer rounded-lg border font-medium border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                 >
                   Sign In
                 </button>
               </div>
+              </form>
             </div>
           </div>
         </div>
