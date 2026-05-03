@@ -171,7 +171,7 @@ const Trade: React.FC = () => {
         return;
       }
 
-      const imageUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
+      const imageUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/finalproject/${filePath}`;
 
       const imagePayload: UpdateTradeDto = {
         image: imageUrl,
@@ -259,7 +259,7 @@ const Trade: React.FC = () => {
           return;
         }
 
-        imageUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
+        imageUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/finalproject/${filePath}`;
       } catch (uploadErr: any) {
         console.error('Error uploading new image:', uploadErr);
         Swal.fire({

@@ -129,7 +129,7 @@ const Assignment: React.FC<AssignmentProps> = () => {
           return;
         }
 
-        uploadedFileUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
+        uploadedFileUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/finalproject/${filePath}`;
 
         // Hapus file lama jika ada dan berbeda dengan file baru
         if (oldFileUrl && oldFileUrl !== uploadedFileUrl) {

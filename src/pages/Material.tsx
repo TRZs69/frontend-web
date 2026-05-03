@@ -19,7 +19,7 @@ import Swal from 'sweetalert2';
 import SectionLoader from '../components/SectionLoader';
 
 const SUPABASE_PUBLIC_MATERIALS_BASE =
-  `${import.meta.env.VITE_SUPABASE_URL || 'https://itarozdimxukkhwxruti.supabase.co'}` +
+  `${import.meta.env.VITE_SUPABASE_URL}` +
   '/storage/v1/object/public/materials/';
 
 const convertAssetUrlToSupabase = (src: string): string => {
