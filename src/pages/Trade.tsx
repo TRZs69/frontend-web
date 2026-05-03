@@ -152,19 +152,18 @@ const Trade: React.FC = () => {
 
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('finalproject')
-        .upload(filePath, imageFile, { upsert: true });
+        .upload(filePath, imageFile, { 
+          upsert: true,
+          contentType: imageFile.type,
+        });
 
       if (uploadError) {
-        if (uploadError instanceof Error) {
-          console.error('Error uploading image:', uploadError.message);
-        } else {
-          console.error('Unknown error uploading image:', uploadError);
-        }
+        console.error('Error uploading image:', uploadError);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to upload image',
-          timer: 1500,
+          text: `Failed to upload image: ${uploadError.message}`,
+          timer: 2000,
           timerProgressBar: true,
           showConfirmButton: false,
         });
@@ -242,34 +241,35 @@ const Trade: React.FC = () => {
       try {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('finalproject')
-          .upload(filePath, imageFile, { upsert: true });
+          .upload(filePath, imageFile, { 
+            upsert: true,
+            contentType: imageFile.type,
+          });
 
         if (uploadError) {
-          handleClearForm();
+          console.error('Error uploading new image:', uploadError);
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to upload new image',
-            timer: 1500,
+            text: `Failed to upload image: ${uploadError.message}`,
+            timer: 2000,
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          console.error('Error uploading new image:', uploadError);
           return;
         }
 
         imageUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
-      } catch (uploadErr) {
-        handleClearForm();
+      } catch (uploadErr: any) {
+        console.error('Error uploading new image:', uploadErr);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to upload new image',
-          timer: 1500,
+          text: `Failed to upload new image: ${uploadErr.message || 'Unknown error'}`,
+          timer: 2000,
           timerProgressBar: true,
           showConfirmButton: false,
         });
-        console.error('Error uploading new image:', uploadErr);
         return;
       }
     }
@@ -613,7 +613,7 @@ const Trade: React.FC = () => {
             >
               <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
-                  Add Trade
+                  Edit Trade
                 </h3>
               </div>
               <div className="flex flex-col gap-5.5 p-6.5">

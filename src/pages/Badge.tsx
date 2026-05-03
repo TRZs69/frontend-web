@@ -193,20 +193,18 @@ const Badge: React.FC = () => {
       // SQL berhasil, lanjutkan dengan upload gambar
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('finalproject')
-        .upload(filePath, imageFile, { upsert: true });
+        .upload(filePath, imageFile, { 
+          upsert: true,
+          contentType: imageFile.type,
+        });
 
       if (uploadError) {
-        if (uploadError instanceof Error) {
-          console.error('Error uploading image:', uploadError.message);
-        } else {
-          console.error('Unknown error uploading image:', uploadError);
-        }
-        handleClearForm();
+        console.error('Error uploading image:', uploadError);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to upload image',
-          timer: 1500,
+          text: `Failed to upload image: ${uploadError.message}`,
+          timer: 2000,
           timerProgressBar: true,
           showConfirmButton: false,
         });
@@ -308,34 +306,35 @@ const Badge: React.FC = () => {
       try {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('finalproject')
-          .upload(filePath, imageFile, { upsert: true });
+          .upload(filePath, imageFile, { 
+            upsert: true,
+            contentType: imageFile.type,
+          });
 
         if (uploadError) {
-          handleClearForm();
+          console.error('Error uploading new image:', uploadError);
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to upload new image',
-            timer: 1500,
+            text: `Failed to upload image: ${uploadError.message}`,
+            timer: 2000,
             timerProgressBar: true,
             showConfirmButton: false,
           });
-          console.error('Error uploading new image:', uploadError);
           return;
         }
 
         imageUrl = `https://itarozdimxukkhwxruti.supabase.co/storage/v1/object/public/finalproject/${filePath}`;
-      } catch (uploadErr) {
-        handleClearForm();
+      } catch (uploadErr: any) {
+        console.error('Error uploading new image:', uploadErr);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to upload new image',
-          timer: 1500,
+          text: `Failed to upload new image: ${uploadErr.message || 'Unknown error'}`,
+          timer: 2000,
           timerProgressBar: true,
           showConfirmButton: false,
         });
-        console.error('Error uploading new image:', uploadErr);
         return;
       }
     }

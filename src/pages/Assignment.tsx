@@ -119,11 +119,12 @@ const Assignment: React.FC<AssignmentProps> = () => {
         const { data, error }: { data: any; error: any } =
           await supabase.storage.from('finalproject').upload(filePath, file, {
             upsert: true,
+            contentType: file.type,
           });
 
         if (error) {
           console.error('Error uploading file:', error.message);
-          setErrorMessage('Failed to upload file.');
+          setErrorMessage(`Failed to upload file: ${error.message}`);
           setIsLoading(false);
           return;
         }
