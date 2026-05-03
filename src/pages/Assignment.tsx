@@ -116,7 +116,7 @@ const Assignment: React.FC<AssignmentProps> = () => {
     try {
       if (file) {
         const filePath = `assignment/${id}/${encodeURIComponent(file.name)}`;
-        const { data, error }: { data: any; error: any } =
+        const { error }: { error: any } =
           await supabase.storage.from('finalproject').upload(filePath, file, {
             upsert: true,
             contentType: file.type,

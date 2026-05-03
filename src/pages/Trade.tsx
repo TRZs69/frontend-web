@@ -239,7 +239,7 @@ const Trade: React.FC = () => {
       const filePath = buildImagePath(imageFile);
 
       try {
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('finalproject')
           .upload(filePath, imageFile, { 
             upsert: true,

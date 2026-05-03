@@ -191,7 +191,7 @@ const Badge: React.FC = () => {
       const response = await api.post('/badge', uploadBadgeData);
 
       // SQL berhasil, lanjutkan dengan upload gambar
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('finalproject')
         .upload(filePath, imageFile, { 
           upsert: true,
