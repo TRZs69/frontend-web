@@ -188,6 +188,7 @@ const Trade: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       await refreshTableData();
     } catch (err) {
       Swal.fire({
@@ -293,6 +294,7 @@ const Trade: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       await refreshTableData();
     } catch (err) {
       handleClearForm();
@@ -355,6 +357,7 @@ const Trade: React.FC = () => {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          window.location.reload();
           await refreshTableData();
         } catch (err) {
           Swal.fire({

@@ -157,6 +157,7 @@ export default function User() {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       await refreshTableData();
     } catch (error) {
       console.error('Error while adding user: ', error);
@@ -212,6 +213,7 @@ export default function User() {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       await refreshTableData();
     } catch (error) {
       console.error('Error while updating user: ', error);
@@ -248,6 +250,7 @@ export default function User() {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          window.location.reload();
           await refreshTableData();
         } catch (error) {
           console.error('Error while deleting user: ', error);

@@ -253,6 +253,7 @@ const Badge: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       fetchData();
     } catch (err) {
       handleClearForm();
@@ -381,6 +382,7 @@ const Badge: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       await refreshTableData();
     } catch (err) {
       handleClearForm();
@@ -444,6 +446,7 @@ const Badge: React.FC = () => {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          window.location.reload();
           await refreshTableData();
         } catch (err) {
           handleClearForm();

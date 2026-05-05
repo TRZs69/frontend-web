@@ -126,6 +126,7 @@ const CourseDetail: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       fetchData();
     } catch (error) {
       handleClearForm();
@@ -166,6 +167,7 @@ const CourseDetail: React.FC = () => {
         timerProgressBar: true,
         showConfirmButton: false,
       });
+      window.location.reload();
       fetchData();
     } catch (error) {
       handleClearForm();
@@ -202,6 +204,7 @@ const CourseDetail: React.FC = () => {
             timerProgressBar: true,
             showConfirmButton: false,
           });
+          window.location.reload();
           fetchData();
         } catch (error) {
           Swal.fire({
