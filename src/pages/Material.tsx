@@ -189,7 +189,7 @@ const Material: React.FC = () => {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Failed to add material',
+        text: materialExists ? 'Failed to update material' : 'Failed to add material',
         timer: 1500,
         timerProgressBar: true,
         showConfirmButton: false,
