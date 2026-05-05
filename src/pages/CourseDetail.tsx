@@ -84,6 +84,7 @@ const CourseDetail: React.FC = () => {
   const handleClearForm = () => {
     setName(undefined);
     setDesc(undefined);
+    setSelectedChapter(null);
     setIsEditModalOpen(false);
     setIsAddModalOpen(false);
   };
@@ -141,6 +142,7 @@ const CourseDetail: React.FC = () => {
   };
 
   const handleEditModal = (data: ChapterDto) => {
+    setSelectedChapter(data);
     setName(data.name);
     setDesc(data.description);
     setIsEditModalOpen(true);
@@ -159,7 +161,7 @@ const CourseDetail: React.FC = () => {
       Swal.fire({
         icon: 'success',
         title: 'Success',
-        text: 'Chapter added successfully',
+        text: 'Chapter updated successfully',
         timer: 1500,
         timerProgressBar: true,
         showConfirmButton: false,
@@ -170,7 +172,7 @@ const CourseDetail: React.FC = () => {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Failed to add chapter',
+        text: 'Failed to update chapter',
         timer: 1500,
         timerProgressBar: true,
         showConfirmButton: false,
@@ -481,7 +483,7 @@ const CourseDetail: React.FC = () => {
             >
               <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
-                  Add Chapter
+                  Edit Chapter
                 </h3>
               </div>
               <div className="flex flex-col gap-5.5 p-6.5">
@@ -529,7 +531,7 @@ const CourseDetail: React.FC = () => {
                     Cancel
                   </button>
                   <button
-                    onClick={handleAddChapter}
+                    onClick={() => handleEditChapter(selectedChapter!.id)}
                     className="bg-primary hover:bg-opacity-90 font-medium text-white py-2 px-4 rounded"
                   >
                     Save
