@@ -22,13 +22,34 @@ api.interceptors.request.use(
   }
 );
 
+api.interceptors.response.use(
+  (response) => {
+    // If the request was a mutation (POST, PUT, DELETE), clear all local API caches
+    if (['post', 'put', 'delete', 'patch'].includes(response.config.method?.toLowerCase() || '')) {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('api_cache_')) {
+          localStorage.removeItem(key);
+        }
+      });
+    }
+    return response;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const originalGet = api.get;
 
 api.get = async function (url: string, config?: any) {
   const skipCache = Boolean(config?.skipCache);
 
   if (skipCache) {
-    return originalGet.call(this, url, config);
+    // Pass skipCache to the backend via query parameter
+    const newConfig = { ...config };
+    newConfig.params = { ...newConfig.params, skipCache: 'true' };
+    return originalGet.call(this, url, newConfig);
   }
 
   const cacheKey = `api_cache_${url}`;
