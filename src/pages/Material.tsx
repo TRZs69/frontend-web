@@ -82,7 +82,7 @@ const Material: React.FC = () => {
       return;
     }
     try {
-      const response = await api.get<MaterialDto>(`/chapter/${id}/materials`);
+      const response = await api.get<MaterialDto>(`/chapter/${id}/materials`, { skipCache: true });
       if (response.data?.id) {
         const normalizedContent = normalizeImageSources(response.data.content || '');
         setMaterialData({
