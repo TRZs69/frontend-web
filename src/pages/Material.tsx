@@ -166,7 +166,7 @@ const Material: React.FC = () => {
         : await api.post('/material', materialToSave);
 
       materialExists
-        ? Swal.fire({
+        ? await Swal.fire({
           icon: 'success',
           title: 'Success',
           text: 'Material updated successfully',
@@ -174,7 +174,7 @@ const Material: React.FC = () => {
           timerProgressBar: true,
           showConfirmButton: false,
         })
-        : Swal.fire({
+        : await Swal.fire({
           icon: 'success',
           title: 'Success',
           text: 'Material added successfully',
@@ -185,6 +185,7 @@ const Material: React.FC = () => {
 
       fetchData();
       setIsEditing(false);
+      window.location.reload();
     } catch (error) {
       Swal.fire({
         icon: 'error',
