@@ -90,11 +90,11 @@ const CourseDetail: React.FC = () => {
   };
 
   const isFormValid = () => {
-    if (!name || !desc) {
+    if (!name) {
       Swal.fire({
         icon: 'warning',
         title: 'Warning',
-        text: 'Please fill in all required fields (Name, Description).',
+        text: 'Please fill in required fields (Name).',
         timer: 1500,
         timerProgressBar: true,
         showConfirmButton: false,
@@ -111,7 +111,7 @@ const CourseDetail: React.FC = () => {
 
     const payload: AddChapterDto = {
       name: name!,
-      description: desc!,
+      description: desc || '',
       courseId: Number(id),
     };
     try {
@@ -152,7 +152,7 @@ const CourseDetail: React.FC = () => {
   const handleEditChapter = async (id: number) => {
     const payload: UpdateChapterDto = {
       name: name !== '' ? name : undefined,
-      description: desc !== '' ? desc : undefined,
+      description: desc !== undefined ? desc : '',
     };
 
     try {

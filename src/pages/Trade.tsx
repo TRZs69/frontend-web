@@ -114,11 +114,11 @@ const Trade: React.FC = () => {
   };
 
   const isFormValid = () => {
-      if (!title || !description || !badgeType) {
+      if (!title || !badgeType) {
         Swal.fire({
           icon: 'warning',
           title: 'Warning',
-          text: 'Please fill in all required fields (Title, Description, Type)',
+          text: 'Please fill in required fields (Title, Type)',
           timer: 1500,
           timerProgressBar: true,
           showConfirmButton: false,
@@ -143,7 +143,7 @@ const Trade: React.FC = () => {
     try {
       const payload: AddTradeDto = {
         title: title,
-        description: description,
+        description: description || '',
         requiredBadgeType: badgeType,
         image: '',
       };
@@ -277,7 +277,7 @@ const Trade: React.FC = () => {
 
     const uploadData: UpdateTradeDto = {
       title: title !== '' ? title : undefined,
-      description: description !== '' ? description : undefined,
+      description: description !== undefined ? description : '',
       requiredBadgeType: badgeType !== '' ? badgeType : undefined,
       image: imageUrl || undefined,
     };
